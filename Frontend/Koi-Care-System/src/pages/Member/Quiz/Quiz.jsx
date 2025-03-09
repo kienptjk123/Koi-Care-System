@@ -1,10 +1,16 @@
-import { Button, ButtonGroup, TextField } from '@mui/material'
+import { Box, Button, ButtonGroup, LinearProgress, TextField } from '@mui/material'
 import axios from 'axios'
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Loading from '../../../components/Loading'
 import './Quiz.css'
+import { MdOutlineForward10, MdOutlineReplay10, MdSkipNext, MdSkipPrevious } from 'react-icons/md'
+import { BsArrowRepeat } from 'react-icons/bs'
+import { FaPlay } from 'react-icons/fa'
+import { CiPause1 } from 'react-icons/ci'
+import { TbVolume, TbVolume2, TbVolume3 } from 'react-icons/tb'
+import Badge from '@mui/material/Badge'
 
 export default function Quiz() {
   const [kanjiList, setKanjiList] = useState([])
@@ -23,7 +29,41 @@ export default function Quiz() {
   const [svgKey, setSvgKey] = useState(0)
   const location = useLocation()
   const level = location.state?.level || 5
+  const [submitted, setSubmitted] = useState(false)
+  const [correct, setCorrect] = useState(false)
+  const [savedKanjis, setSavedKanjis] = useState([])
+  const [savedIndex, setSavedIndex] = useState(0)
+
   const navigate = useNavigate()
+
+  const [progress, setProgress] = useState(0)
+  const [buffer, setBuffer] = useState(10)
+
+  const progressRef = useRef(() => {})
+  useEffect(() => {
+    progressRef.current = () => {
+      if (progress === 100) {
+        setProgress(0)
+        setBuffer(10)
+      } else {
+        setProgress(progress + 1)
+        if (buffer < 100 && progress % 5 === 0) {
+          const newBuffer = buffer + 1 + Math.random() * 10
+          setBuffer(newBuffer > 100 ? 100 : newBuffer)
+        }
+      }
+    }
+  })
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      progressRef.current()
+    }, 100)
+
+    return () => {
+      clearInterval(timer)
+    }
+  }, [])
 
   const fetchKanji = async (level) => {
     try {
@@ -94,6 +134,7 @@ export default function Quiz() {
       setUserAnswer('')
       setFeedback('')
       setFlipped(false)
+      setSubmitted(false)
     }
   }
 
@@ -105,6 +146,7 @@ export default function Quiz() {
       setUserAnswer('')
       setFeedback('')
       setFlipped(false)
+      setSubmitted(false)
     }
   }
 
@@ -133,10 +175,37 @@ export default function Quiz() {
     if (!currentKanji) return
     const validAnswers = currentKanji.phonetic.trim().replaceAll('.').replaceAll(',').replaceAll('-').split(' ')
     if (validAnswers.includes(userAnswer.trim())) {
-      setFeedback('✅ Correct!')
+      setFeedback('🌸 せいかい！すごい！💖')
+      setCorrect(true)
     } else {
-      setFeedback('❌ Incorrect. Try again.')
+      setFeedback('❌ ちがうよ... もういっかいがんばって！💪')
+      setCorrect(false)
     }
+    setSubmitted(true)
+  }
+
+  const saveKanji = () => {
+    if (currentKanji && !savedKanjis.some((k) => k.word === currentKanji.word)) {
+      setSavedKanjis([...savedKanjis, currentKanji])
+    }
+  }
+
+  const retrySavedKanji = () => {
+    if (savedKanjis.length > 0) {
+      let nextIndex = savedIndex === -1 ? 0 : savedIndex + 1
+      if (nextIndex >= savedKanjis.length) nextIndex = 0
+
+      setSavedIndex(nextIndex)
+      setCurrentKanji(savedKanjis[nextIndex])
+      setUserAnswer('')
+      setFeedback('')
+      setFlipped(false)
+      setSubmitted(false)
+    }
+  }
+
+  const clearSavedKanjis = () => {
+    setSavedKanjis([])
   }
 
   if (loading) {
@@ -149,54 +218,68 @@ export default function Quiz() {
 
   const svgMatch = svg.match(/<svg[^>]*>([\s\S]*?)<\/svg>/)
   if (!svgMatch) return ''
-  const svgContent = svgMatch[1]
 
+  const svgContent = svgMatch[1]
   const allPaths = svgContent.match(/<path[^>]*>/g) || []
   const groupMatches = svgContent.match(/<g[^>]*>.*?<\/g>/gs)
 
   let firstGroup = ''
-  let firstGroupPaths = []
+  let lastGroup = ''
   let lastGroupPaths = []
 
   if (groupMatches && groupMatches.length >= 2) {
     firstGroup = groupMatches[0]
-    firstGroupPaths = firstGroup.match(/<path[^>]*>/g) || []
-    lastGroupPaths = groupMatches[groupMatches.length - 1].match(/<path[^>]*>/g) || []
+    lastGroup = groupMatches[groupMatches.length - 1]
+    lastGroupPaths = lastGroup.match(/<path[^>]*>/g) || []
   }
 
-  const extractedPaths = [...allPaths, ...lastGroupPaths]
-  const svgA = `<svg xmlns="http://www.w3.org/2000/svg" width='{109}' height='{109}' viewBox='0 0 109 109'>${firstGroup}${extractedPaths.join('\n')}</svg>`
-  console.log('object', svgA)
+  const extractedPaths = [...allPaths, ...lastGroupPaths].join('\n')
+
+  const svgA = `<svg xmlns="http://www.w3.org/2000/svg" width="109" height="109" viewBox="0 0 109 109">\n  ${firstGroup}\n  ${extractedPaths}\n</svg>`
 
   return (
-    <div className='flex flex-col gap-16 items-center justify-center min-h-screen bg-gradient-to-r from-blue-400 to-indigo-500 p-6 text-center'>
-      <h1 className='text-3xl font-bold text-white'>KANJI QUIZ N{level} 🎌</h1>
-
+    <div className='flex flex-col gap-12 items-center justify-center min-h-screen bg-gradient-to-r from-blue-400 to-indigo-500 p-6'>
       <motion.div
-        className='relative flex flex-col p-6 bg-white rounded-lg shadow-lg min-w-[50vw] min-h-[75vh]'
+        className='p-6 bg-white rounded-xl shadow-2xl'
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: 0.5 }}
         style={{ transformStyle: 'preserve-3d' }}
       >
         {!flipped ? (
           <div
-            className='relative text-center flex flex-col justify-between min-h-[68vh]'
+            className='relative text-center flex flex-col justify-between min-h-[60vh] min-w-[40vw]'
             style={{ backfaceVisibility: 'hidden' }}
           >
             <div className='flex justify-between '>
-              <div className='flex gap-2'>
+              <div className='flex gap-3'>
                 <Button
+                  onMouseEnter={() => import('../Kanji/PracticeKanji')}
                   onClick={() => navigate('/kanji')}
                   variant='contained'
                   color='primary'
-                  className='w-4 h-10 absolute top-0 '
+                  className='w-4 h-10 absolute top-0'
+                  sx={{
+                    height: 44,
+                    fontWeight: 'bold',
+                    boxShadow: 2
+                  }}
                 >
                   <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='size-6'>
                     <path d='M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z' />
                     <path d='m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z' />
                   </svg>
                 </Button>
-                <Button onClick={pickPreviousKanji} variant='contained' color='primary' className='w-4 h-10'>
+                <Button
+                  onClick={pickPreviousKanji}
+                  variant='contained'
+                  color='primary'
+                  className='w-4 h-10'
+                  sx={{
+                    height: 44,
+                    fontWeight: 'bold',
+                    boxShadow: 2
+                  }}
+                >
                   <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='size-6'>
                     <path
                       fillRule='evenodd'
@@ -205,9 +288,39 @@ export default function Quiz() {
                     />
                   </svg>
                 </Button>
+                <Button
+                  onClick={() => pickRandomKanji(kanjiList)}
+                  variant='contained'
+                  color='primary'
+                  className='w-4 h-10'
+                  sx={{
+                    height: 44,
+                    fontWeight: 'bold',
+                    boxShadow: 2
+                  }}
+                >
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='size-6'
+                  >
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3' />
+                  </svg>
+                </Button>
               </div>
 
-              <ButtonGroup variant='contained' className='mx-2'>
+              <ButtonGroup
+                variant='contained'
+                className='mx-2'
+                sx={{
+                  height: 44,
+                  fontWeight: 'bold',
+                  boxShadow: 2
+                }}
+              >
                 <Button color={isRandomMode ? 'primary' : 'default'} onClick={() => setIsRandomMode(true)}>
                   Random
                 </Button>
@@ -221,37 +334,86 @@ export default function Quiz() {
                   Sequential
                 </Button>
               </ButtonGroup>
-              <div className='flex gap-2'>
-                <Button
-                  onClick={() => pickRandomKanji(kanjiList)}
-                  variant='contained'
-                  color='primary'
-                  className='w-4 h-10 '
-                >
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    strokeWidth={1.5}
-                    stroke='currentColor'
-                    className='size-6'
+              <div className='flex gap-3'>
+                <Badge badgeContent={savedKanjis.length} color='error'>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={saveKanji}
+                    className='w-4 h-10'
+                    sx={{
+                      height: 44,
+                      fontWeight: 'bold',
+                      boxShadow: 2
+                    }}
                   >
-                    <path strokeLinecap='round' strokeLinejoin='round' d='M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3' />
-                  </svg>
-                </Button>
-                <Button
-                  variant='contained'
-                  color='primary'
-                  onClick={() => setDarkMode((prev) => !prev)}
-                  className='w-4 h-10 '
-                >
-                  {darkMode ? '☀️' : '🌙'}
-                </Button>
+                    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='size-5'>
+                      <path
+                        fillRule='evenodd'
+                        d='M6.32 2.577a49.255 49.255 0 0 1 11.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 0 1-1.085.67L12 18.089l-7.165 3.583A.75.75 0 0 1 3.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93Z'
+                        clipRule='evenodd'
+                      />
+                    </svg>
+                  </Button>
+                </Badge>
+                {savedKanjis.length > 0 && (
+                  <div className='flex gap-2'>
+                    <Button
+                      onClick={retrySavedKanji}
+                      variant='contained'
+                      color='primary'
+                      className='w-4 h-10'
+                      sx={{
+                        height: 44,
+                        fontWeight: 'bold',
+                        boxShadow: 2
+                      }}
+                    >
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        viewBox='0 0 24 24'
+                        fill='currentColor'
+                        className='size-6'
+                      >
+                        <path
+                          fillRule='evenodd'
+                          d='M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z'
+                          clipRule='evenodd'
+                        />
+                      </svg>
+                    </Button>
+                    <Button
+                      onClick={clearSavedKanjis}
+                      variant='outlined'
+                      className='w-4 h-10'
+                      sx={{
+                        height: 44,
+                        fontWeight: 'bold',
+                        boxShadow: 2,
+                        color: 'white',
+                        background: 'red'
+                      }}
+                    >
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        viewBox='0 0 24 24'
+                        fill='currentColor'
+                        className='size-6'
+                      >
+                        <path
+                          fillRule='evenodd'
+                          d='M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z'
+                          clipRule='evenodd'
+                        />
+                      </svg>
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
-            <p className='text-9xl font-bold'>{currentKanji?.word}</p>
+            <p className='text-[10rem] font-bold'>{currentKanji?.word}</p>
 
-            <form onSubmit={handleSubmit} className='flex flex-col gap-6 mb-4'>
+            <form onSubmit={handleSubmit} className='flex flex-col'>
               <TextField
                 variant='outlined'
                 fullWidth
@@ -260,33 +422,66 @@ export default function Quiz() {
                 onChange={(e) => setUserAnswer(e.target.value)}
                 className='border rounded-lg'
               />
+              <div className='mt-4'>
+                {!submitted && (
+                  <Button
+                    type='submit'
+                    variant='contained'
+                    color='primary'
+                    className='w-full h-10'
+                    sx={{
+                      height: 44,
+                      fontWeight: 'bold',
+                      boxShadow: 2
+                    }}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </div>
               <div>
-                <Button type='submit' variant='contained' color='primary' className='w-full h-10'>
-                  Submit
-                </Button>
-                {feedback && <p className='mt-2 text-lg'>{feedback}</p>}
+                {submitted && feedback && (
+                  <div className='relative'>
+                    <Button
+                      onClick={() => {
+                        setFlipped(true)
+                        handleExamples(`${currentKanji.word}`)
+                      }}
+                      variant='contained'
+                      color='success'
+                      className='w-full h-10 mt-3'
+                      sx={{
+                        height: 44,
+                        fontWeight: 'bold',
+                        boxShadow: 2
+                      }}
+                    >
+                      Show Details
+                    </Button>
+
+                    {feedback && (
+                      <p
+                        className={`absolute -top-[18vh] left-1/2 -translate-x-1/2 mt-1 text-lg text-white font-bold p-2 rounded shadow-lg ${
+                          correct ? 'bg-green-400' : 'bg-red-400'
+                        }`}
+                      >
+                        {feedback}
+                      </p>
+                    )}
+                  </div>
+                )}
+                <div className='flex justify-end mt-2'>
+                  <p className='text-sm font-semibold bg-blue-100 px-3 py-1 rounded-lg shadow-md'>
+                    {`${currentIndex + 1} / ${kanjiList.length}`}
+                  </p>
+                </div>
               </div>
             </form>
-
-            {feedback && (
-              <div>
-                <Button
-                  onClick={() => {
-                    setFlipped(true)
-                    handleExamples(`${currentKanji.word}`)
-                  }}
-                  variant='contained'
-                  color='success'
-                  className='w-full h-10 mt-3'
-                >
-                  Show Details
-                </Button>
-              </div>
-            )}
           </div>
         ) : (
+          // mat sau
           <div
-            className='text-center p-3 flex flex-col justify-between max-h-[67vh] overflow-y-auto thin-scrollbar'
+            className='text-center p-3 flex flex-col justify-between max-h-[70vh] min-w-[40vw]  overflow-y-auto thin-scrollbar'
             style={{
               transform: 'rotateY(180deg)',
               backfaceVisibility: 'hidden'
@@ -314,7 +509,7 @@ export default function Quiz() {
               </div>
             </div>
             <div className='flex justify-between gap-4 mt-10'>
-              <div className='text-xl text-start text-gray-700 space-y-2'>
+              <div className='flex-1 text-xl text-start text-gray-700 space-y-2'>
                 <p className='break-words whitespace-normal max-w-[300px]'>
                   <strong className='text-indigo-500'>Kun reading:</strong> {currentKanji.phonetic}
                 </p>
@@ -325,17 +520,20 @@ export default function Quiz() {
                   <strong className='text-indigo-500'>Level:</strong> N{currentKanji.group}
                 </p>
               </div>
-              <div>
+              <div className='flex-1'>
                 <h3 className='text-xl text-start font-bold text-indigo-500'>Examples:</h3>
                 <div className='mt-2 flex-1 text-gray-700 text-lg'>
                   {examplesArray?.map((example) =>
                     example?.examples?.slice(0, 3).map((ex, index) => (
-                      <div key={index} className='flex items-center text-start gap-2'>
-                        <p className='break-words whitespace-normal max-w-[500px]'>
-                          <strong>
+                      <div
+                        key={index}
+                        className='flex items-center text-start gap-2 bg-gray-100 p-3 rounded-lg shadow-sm'
+                      >
+                        <p className='max-w-full line-clamp-2'>
+                          <strong className='text-indigo-600'>
                             {ex.w}: {ex.h}
                           </strong>{' '}
-                          ({ex.p}): {ex.m}
+                          (<span className='text-gray-500'>{ex.p}</span>): {ex.m}
                         </p>
                       </div>
                     ))
@@ -345,12 +543,11 @@ export default function Quiz() {
             </div>
             <div className='flex gap-3 mt-10'>
               <Button
-                onClick={() => {
-                  setFlipped(false)
-                }}
+                onClick={() => setFlipped(false)}
                 variant='contained'
                 color='error'
-                className='w-1/2 h-10'
+                fullWidth
+                sx={{ height: 44, fontWeight: 'bold', boxShadow: 2 }}
               >
                 Close
               </Button>
@@ -358,10 +555,38 @@ export default function Quiz() {
                 onClick={() => pickRandomKanji(kanjiList)}
                 variant='contained'
                 color='primary'
-                className='w-1/2 h-10'
+                fullWidth
+                sx={{
+                  height: 44,
+                  fontWeight: 'bold',
+                  boxShadow: 2
+                }}
               >
                 Next Kanji
               </Button>
+              {savedKanjis.length > 0 && (
+                <div className='flex gap-2'>
+                  <Button
+                    onClick={retrySavedKanji}
+                    variant='contained'
+                    color='primary'
+                    className='w-4 h-10'
+                    sx={{
+                      height: 44,
+                      fontWeight: 'bold',
+                      boxShadow: 2
+                    }}
+                  >
+                    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='size-6'>
+                      <path
+                        fillRule='evenodd'
+                        d='M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z'
+                        clipRule='evenodd'
+                      />
+                    </svg>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
