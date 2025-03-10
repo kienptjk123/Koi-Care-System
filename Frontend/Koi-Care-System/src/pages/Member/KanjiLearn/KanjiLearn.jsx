@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import { useLocation, useNavigate } from 'react-router-dom'
 import '../Quiz/Quiz.css'
 export default function KanjiLearn() {
@@ -125,8 +126,8 @@ export default function KanjiLearn() {
           <div className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-4'>
             {[...Array(50)].map((_, i) => (
               <div key={i} className='text-center p-4 bg-gray-50 rounded-lg border'>
-                <Skeleton variant='text' width={40} height={70} />
-                <Skeleton variant='text' width={60} height={60} />
+                <Skeleton variant='text' width={40} height={28} />
+                <Skeleton variant='text' width={60} height={18} />
               </div>
             ))}
           </div>
