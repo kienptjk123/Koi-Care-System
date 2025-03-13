@@ -9,6 +9,7 @@ import ProtectedRoute from './ProtectedRoute'
 import Loading from './components/Loading'
 import Quiz from './pages/Member/Quiz/Quiz'
 import KanjiLearn from './pages/Member/KanjiLearn/KanjiLearn'
+import UserLayout from './layouts/UserLayout'
 
 const Login = lazy(() => import('./pages/Login/Login'))
 const Home = lazy(() => import('./pages/Home/Home'))
@@ -134,15 +135,27 @@ function App() {
     },
     {
       path: path.verify,
-      element: <VerifyEmail />
+      element: (
+        <Suspense fallback={<Loading />}>
+          <VerifyEmail />
+        </Suspense>
+      )
     },
     {
       path: path.verifySuccess,
-      element: <VerifySuccess />
+      element: (
+        <Suspense fallback={<Loading />}>
+          <VerifySuccess />
+        </Suspense>
+      )
     },
     {
       path: path.email,
-      element: <Email />
+      element: (
+        <Suspense fallback={<Loading />}>
+          <Email />
+        </Suspense>
+      )
     },
     {
       path: path.otp,
@@ -161,193 +174,280 @@ function App() {
       )
     },
     {
-      path: path.member,
-      element: (
-        <Suspense fallback={<Loading />}>
-          <Member />
-        </Suspense>
-      )
+      path: '',
+      element: <UserLayout />,
+      children: [
+        {
+          path: path.member,
+          element: (
+            <Suspense fallback={<Loading />}>
+              <Member />
+            </Suspense>
+          )
+        },
+        {
+          path: path.myAccount,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <MyAccount />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.profile,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <Profile />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.orderMember,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <OrderMember />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.dashboard,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <Dashboard />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.myKoi,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <MyKoi />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.myPond,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <MyPond />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.waterParameters,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <WaterParameters />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.reminders,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <Reminders />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.recommendations,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <Recommendations />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.foodCalculator,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <FoodCalculator />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.saltCalculator,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <SaltCalculator />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.statistics,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <Statistics />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.news,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <News />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.newsDetails,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <NewsDetail />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.koiDetail,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <KoiDetail />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.recommendationDetail,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <RecommendationDetail />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.aboutMember,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <About />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.myPondLog,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <MyPondLog />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.myPondLogDetail,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <MyPondLogId />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.wishList,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <WishList />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.cartList,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <CartList />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.payment,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <Payment />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.paymentSuccess,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <PaymentSuccess />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.paymentError,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <PaymentError />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.checkout,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <Checkout />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: path.myPondIssue,
+          element: (
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Suspense fallback={<Loading />}>
+                <MyPondIssue />
+              </Suspense>
+            </ProtectedRoute>
+          )
+        }
+      ]
     },
-    {
-      path: path.myAccount,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <MyAccount />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.profile,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <Profile />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.orderMember,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <OrderMember />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.dashboard,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <Dashboard />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.myKoi,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <MyKoi />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.myPond,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <MyPond />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.waterParameters,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <WaterParameters />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.reminders,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <Reminders />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.recommendations,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <Recommendations />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.foodCalculator,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <FoodCalculator />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.saltCalculator,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <SaltCalculator />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.statistics,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <Statistics />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.news,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <News />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.newsDetails,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <NewsDetail />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.koiDetail,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <KoiDetail />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.recommendationDetail,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <RecommendationDetail />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.aboutMember,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <About />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.myPondLog,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <MyPondLog />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
+
     {
       path: path.shop,
       element: (
@@ -409,16 +509,6 @@ function App() {
       )
     },
     {
-      path: path.myPondLogDetail,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <MyPondLogId />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
       path: path.tag,
       element: (
         <ProtectedRoute isAuthenticated={isAuthenticated}>
@@ -428,56 +518,7 @@ function App() {
         </ProtectedRoute>
       )
     },
-    {
-      path: path.wishList,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <WishList />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.cartList,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <CartList />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.payment,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <Payment />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.paymentSuccess,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <PaymentSuccess />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.paymentError,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <PaymentError />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
+
     {
       path: path.createTag,
       element: (
@@ -528,26 +569,7 @@ function App() {
         </ProtectedRoute>
       )
     },
-    {
-      path: path.checkout,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <Checkout />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: path.myPondIssue,
-      element: (
-        <ProtectedRoute isAuthenticated={isAuthenticated}>
-          <Suspense fallback={<Loading />}>
-            <MyPondIssue />
-          </Suspense>
-        </ProtectedRoute>
-      )
-    },
+
     {
       path: path.promotion,
       element: (

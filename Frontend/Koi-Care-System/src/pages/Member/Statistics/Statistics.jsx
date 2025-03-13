@@ -1,28 +1,26 @@
 /* eslint-disable no-unused-vars */
-import LeftSideBar from '../../../components/Member/LeftSideBar'
-import { useDarkMode } from '../../../hooks/DarkModeContext'
-import Header from '../../../components/Member/Header'
-import TopLayout from '../../../layouts/TopLayout'
-import { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
+import { motion } from 'framer-motion'
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { useNavigate } from 'react-router-dom'
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  AreaChart,
-  ResponsiveContainer,
   Area,
+  AreaChart,
+  Bar,
   BarChart,
-  Bar
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
 } from 'recharts'
-import { motion } from 'framer-motion'
+import { useDarkMode } from '../../../hooks/DarkModeContext'
+import TopLayout from '../../../layouts/TopLayout'
 
 function Statistics() {
   const { isDarkMode } = useDarkMode()
@@ -486,500 +484,485 @@ function Statistics() {
 
   return (
     <div>
-      <div className='h-screen flex'>
-        <LeftSideBar />
-
-        <div
-          className={`relative ${
-            isDarkMode ? 'bg-custom-dark text-white' : 'bg-white text-black'
-          } shadow-xl flex-1 flex-col overflow-y-auto overflow-x-hidden`}
+      <TopLayout text='Statistics' links='member/statistics' />
+      <div className='pb-6 lg:text-lg text-sm flex justify-between items-center'>
+        <select
+          id='ponds'
+          className={`${isDarkMode ? 'bg-custom-dark' : ''} border rounded-lg p-2 outline-none`}
+          onChange={handlePondChange}
         >
-          <Header />
-          <div className='py-5 px-[30px] mx-auto max-w-[2000px]'>
-            <TopLayout text='Statistics' links='member/statistics' />
-            <div className='pb-6 lg:text-lg text-sm flex justify-between items-center'>
-              <select
-                id='ponds'
-                className={`${isDarkMode ? 'bg-custom-dark' : ''} border rounded-lg p-2 outline-none`}
-                onChange={handlePondChange}
-              >
-                <option value=''>Select a pond</option>
-                {ponds.length > 0 ? (
-                  ponds.map((pond) => (
-                    <option key={pond.id} value={pond.id}>
-                      {pond.name}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>Loading ponds...</option>
-                )}
-              </select>
+          <option value=''>Select a pond</option>
+          {ponds.length > 0 ? (
+            ponds.map((pond) => (
+              <option key={pond.id} value={pond.id}>
+                {pond.name}
+              </option>
+            ))
+          ) : (
+            <option disabled>Loading ponds...</option>
+          )}
+        </select>
 
-              <select
-                onChange={handleFilterChange}
-                className={`${isDarkMode ? 'bg-custom-dark' : ''} border rounded-lg p-2 outline-none`}
-              >
-                <option value='Day'>Day</option>
-                <option value='Last month'>Last month</option>
-                <option value='Last year'>Last year</option>
-              </select>
-            </div>
-            <motion.div
-              initial='hidden'
-              animate='visible'
-              variants={{
-                visible: {
-                  transition: {
-                    staggerChildren: 0.3
-                  }
-                }
-              }}
-              className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-7'
-            >
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, x: 100 },
-                  visible: { opacity: 1, x: 0, transition: { delay: 0.6 } }
-                }}
-                className='border py-5 rounded-lg w-full border-gray-200 shadow-lg'
-              >
-                <div className='lg:text-xl md:text-lg text-sm mb-4 text-center'>
-                  Nitrite - Phosphate - Ammonium (mg/l)
-                </div>
-                <ResponsiveContainer width='100%' height={300}>
-                  <LineChart
-                    className='w-full mx-auto'
-                    data={sortedWaterData}
-                    margin={{
-                      top: 10,
-                      right: 50,
-                      left: 0,
-                      bottom: 0
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray='3 3' />
-                    <XAxis dataKey='name' />
-                    <YAxis />
-                    <Tooltip formatter={(value) => formatTooltipValue(value)} />
-                    <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
-                    <Line
-                      type='monotone'
-                      dataKey='nitrite'
-                      strokeOpacity={opacity.nitrite}
-                      stroke='#8884d8'
-                      activeDot={{ r: 6, fill: '#8884d8', stroke: 'white', strokeWidth: 2 }}
-                    />
-                    <Line
-                      type='monotone'
-                      dataKey='phosphate'
-                      strokeOpacity={opacity.phosphate}
-                      stroke='#ff7300'
-                      activeDot={{ r: 6, fill: '#ff7300', stroke: 'white', strokeWidth: 2 }}
-                    />
-                    <Line
-                      type='monotone'
-                      dataKey='totalChlorine'
-                      strokeOpacity={opacity.totalChlorine}
-                      stroke='#387908'
-                      activeDot={{ r: 6, fill: '#387908', stroke: 'white', strokeWidth: 2 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </motion.div>
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, x: 100 },
-                  visible: { opacity: 1, x: 0, transition: { delay: 0.9 } }
-                }}
-                className='py-5 rounded-lg border border-gray-200 shadow-lg'
-              >
-                <div className='lg:text-xl md:text-lg text-sm mb-4 text-center'>Carbon - PH - Hardness (dH)</div>
-                <ResponsiveContainer width='100%' height={300}>
-                  <LineChart
-                    width={500}
-                    height={300}
-                    data={sortedWaterData}
-                    className='w-full mx-auto'
-                    margin={{
-                      top: 5,
-                      right: 60
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray='3 3' />
-                    <XAxis dataKey='name' />
-                    <YAxis />
-                    <Tooltip formatter={(value) => formatTooltipValue(value)} />
-                    <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
-                    <Line
-                      type='monotone'
-                      dataKey='carbonHardness'
-                      strokeOpacity={opacity.carbonHardness}
-                      stroke='#8884d8'
-                      activeDot={{ r: 6, fill: '#8884d8', stroke: 'white', strokeWidth: 2 }}
-                    />
-                    <Line
-                      type='monotone'
-                      dataKey='phValue'
-                      strokeOpacity={opacity.phValue}
-                      stroke='#82ca9d'
-                      activeDot={{ r: 6, fill: '#82ca9d', stroke: 'white', strokeWidth: 2 }}
-                    />
-                    <LineChart
-                      type='monotone'
-                      dataKey='hardness'
-                      strokeOpacity={opacity.hardness}
-                      stroke='#ff7300'
-                      activeDot={{ r: 6, fill: '#ff7300', stroke: 'white', strokeWidth: 2 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </motion.div>
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, x: 100 },
-                  visible: { opacity: 1, x: 0, transition: { delay: 1.2 } }
-                }}
-                className='py-5 rounded-lg border border-gray-200 shadow-lg'
-              >
-                <div className='text-xl mb-4 text-center'>Temperature - Temp (C)</div>
-                <ResponsiveContainer width='100%' height={300}>
-                  <LineChart
-                    width={500}
-                    height={300}
-                    data={sortedWaterData}
-                    className='w-full mx-auto'
-                    margin={{
-                      top: 5,
-                      right: 60
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray='3 3' />
-                    <XAxis dataKey='name' />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
-                    <Line
-                      type='monotone'
-                      dataKey='temperature'
-                      strokeOpacity={opacity.temperature}
-                      stroke='#8884d8'
-                      activeDot={{ r: 6, fill: '#8884d8', stroke: 'white', strokeWidth: 2 }}
-                    />
-                    <Line
-                      type='monotone'
-                      dataKey='temp'
-                      strokeOpacity={opacity.temp}
-                      stroke='#82ca9d'
-                      activeDot={{ r: 6, fill: '#82ca9d', stroke: 'white', strokeWidth: 2 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </motion.div>
-            </motion.div>
-            <motion.div
-              initial='hidden'
-              animate='visible'
-              variants={{
-                visible: {
-                  transition: {
-                    staggerChildren: 0.3
-                  }
-                }
-              }}
-              className='grid lg:grid-cols-2 grid-cols-1 gap-7 mt-10'
-            >
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, x: 0 },
-                  visible: { opacity: 1, x: 0, transition: { delay: 0.6 } }
-                }}
-                className='py-5 px-2 rounded-lg border border-gray-200 shadow-lg'
-              >
-                <div className='text-xl mb-4 text-center'>CO₂ - O₂ - Total Chlorine (mg/l)</div>
-                <ResponsiveContainer width='100%' height={320}>
-                  <AreaChart
-                    data={sortedWaterData}
-                    className='w-full mx-auto'
-                    margin={{ top: 20, right: 30, left: 10, bottom: 10 }}
-                  >
-                    <defs>
-                      <linearGradient id='nitrateColor' x1='0' y1='0' x2='0' y2='1'>
-                        <stop offset='5%' stopColor='#ff7300' stopOpacity={0.6} />
-                        <stop offset='95%' stopColor='#ff7300' stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id='carbonDioxideColor' x1='0' y1='0' x2='0' y2='1'>
-                        <stop offset='5%' stopColor='#7CF0FF' stopOpacity={0.6} />
-                        <stop offset='95%' stopColor='#7CF0FF' stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id='oxygenColor' x1='0' y1='0' x2='0' y2='1'>
-                        <stop offset='5%' stopColor='#4570EA' stopOpacity={0.6} />
-                        <stop offset='95%' stopColor='#4570EA' stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-
-                    <CartesianGrid strokeDasharray='3 3' opacity={0.3} />
-                    <XAxis dataKey='name' tick={{ fill: '#555' }} />
-                    <YAxis tick={{ fill: '#555' }} />
-                    <Tooltip
-                      formatter={(value) => `${formatTooltipValue(value)} mg/l`}
-                      contentStyle={{ backgroundColor: '#f4f4f4', borderColor: '#ddd' }}
-                      labelStyle={{ fontWeight: 'bold' }}
-                    />
-                    <Area type='monotone' dataKey='nitrate' stackId='1' stroke='#ff7300' fill='url(#nitrateColor)' />
-                    <Area
-                      type='monotone'
-                      dataKey='carbonDioxide'
-                      stackId='1'
-                      stroke='#7CF0FF'
-                      fill='url(#carbonDioxideColor)'
-                    />
-                    <Area type='monotone' dataKey='oxygen' stackId='1' stroke='#4570EA' fill='url(#oxygenColor)' />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </motion.div>
-
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, x: 0 },
-                  visible: { opacity: 1, x: 0, transition: { delay: 0.9 } }
-                }}
-                className='py-5 px-2 rounded-lg border border-gray-200 shadow-lg'
-              >
-                <div className='text-xl mb-4 text-center'>Amount fed (g)</div>
-                <ResponsiveContainer width='100%' height={300}>
-                  <BarChart data={sortedWaterData}>
-                    <CartesianGrid strokeDasharray='3 3' />
-                    <XAxis dataKey='name' />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey='amountFed' fill='#8884d8' />
-                  </BarChart>
-                </ResponsiveContainer>
-              </motion.div>
-            </motion.div>
-            <motion.div
-              initial='hidden'
-              animate='visible'
-              variants={{
-                visible: {
-                  transition: {
-                    staggerChildren: 0.3
-                  }
-                }
-              }}
-              className='grid lg:grid-cols-2 grid-cols-1 gap-7 mt-10'
-            >
-              <motion.div className='py-5 mt-10 rounded-lg border border-gray-200 shadow-lg'>
-                <div className='text-xl mb-4 text-center'>Koi Length Growth History in Pond</div>
-                <ResponsiveContainer width='100%' height={300}>
-                  <LineChart
-                    data={lengthChartData}
-                    className='w-full mx-auto'
-                    margin={{
-                      top: 5,
-                      right: 60
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray='3 3' />
-                    <XAxis dataKey='date' />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    {koiGrowthData.map((koi, index) => {
-                      const colorIndex = Math.floor(Math.random() * availableColors.length)
-                      const color = availableColors[colorIndex]
-                      availableColors.splice(colorIndex, 1)
-                      return (
-                        <Line
-                          key={index}
-                          type='monotone'
-                          dataKey={koi.koiName}
-                          stroke={color}
-                          activeDot={{ r: 8 }}
-                          name={`${koi.koiName}`}
-                        />
-                      )
-                    })}
-                  </LineChart>
-                </ResponsiveContainer>
-              </motion.div>
-
-              <motion.div className='py-5 mt-10 rounded-lg border border-gray-200 shadow-lg'>
-                <div className='text-xl mb-4 text-center'>Koi Weight Growth History in Pond</div>
-                <ResponsiveContainer width='100%' height={300}>
-                  <LineChart
-                    data={weightChartData}
-                    className='w-full mx-auto'
-                    margin={{
-                      top: 5,
-                      right: 60
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray='3 3' />
-                    <XAxis dataKey='date' />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    {koiGrowthData.map((koi, index) => {
-                      const colorIndex = Math.floor(Math.random() * availableColors.length)
-                      const color = availableColors[colorIndex]
-                      availableColors.splice(colorIndex, 1)
-
-                      return (
-                        <Line
-                          key={index}
-                          type='monotone'
-                          dataKey={koi.koiName}
-                          stroke={color}
-                          activeDot={{ r: 8 }}
-                          name={`${koi.koiName}`}
-                        />
-                      )
-                    })}
-                  </LineChart>
-                </ResponsiveContainer>
-              </motion.div>
-            </motion.div>
-            <div className='pb-6 mt-10 text-lg flex justify-between items-center'>
-              <select
-                id='kois'
-                className={`${isDarkMode ? 'bg-custom-dark' : ''} border rounded-lg p-2 outline-none`}
-                onChange={handleKoiChange}
-              >
-                <option value=''>Select a Koi</option>
-                {kois.length > 0 ? (
-                  kois.map((koi) => (
-                    <option key={koi.id} value={koi.id}>
-                      {koi.name}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>Loading kois...</option>
-                )}
-              </select>
-            </div>
-            <motion.div
-              initial='hidden'
-              animate='visible'
-              variants={{
-                visible: {
-                  transition: {
-                    staggerChildren: 0.3
-                  }
-                }
-              }}
-              className='grid lg:grid-cols-2 grid-cols-1 gap-7'
-            >
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, x: -100 },
-                  visible: { opacity: 1, x: 0, transition: { delay: 1.2 } }
-                }}
-                className='border py-5 rounded-lg w-full border-gray-200 shadow-lg'
-              >
-                <div className='text-xl mb-4 text-center'>Length Growth History </div>
-                <ResponsiveContainer width='100%' height={300}>
-                  <AreaChart
-                    data={sortedGrowthData}
-                    className='w-full mx-auto'
-                    margin={{
-                      top: 5,
-                      right: 60
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray='3 3' />
-                    <XAxis dataKey='name' />
-                    <YAxis />
-                    <Tooltip formatter={(value) => formatTooltipValue(value)} />
-                    <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
-                    <Area
-                      type='monotone'
-                      dataKey='length'
-                      stroke='#8884d8'
-                      fillOpacity={1}
-                      fill='url(#lengthColor)'
-                      name='length'
-                    />
-                    <Area
-                      type='monotone'
-                      dataKey='lengthStandard'
-                      stroke='#ff7300'
-                      fillOpacity={0.6}
-                      fill='url(#lengthStandardColor)'
-                      name='standard length'
-                    />
-
-                    <defs>
-                      <linearGradient id='lengthColor' x1='0' y1='0' x2='0' y2='1'>
-                        <stop offset='5%' stopColor='#8884d8' stopOpacity={0.8} />
-                        <stop offset='95%' stopColor='#8884d8' stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id='lengthStandardColor' x1='0' y1='0' x2='0' y2='1'>
-                        <stop offset='5%' stopColor='#ffc658' stopOpacity={0.8} />
-                        <stop offset='95%' stopColor='#ffc658' stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                  </AreaChart>
-                </ResponsiveContainer>
-              </motion.div>
-
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, x: -100 },
-                  visible: { opacity: 1, x: 0, transition: { delay: 1.5 } }
-                }}
-                className='border py-5 rounded-lg w-full border-gray-200 shadow-lg'
-              >
-                <div className='text-xl mb-4 text-center'>Weight Growth History </div>
-                <ResponsiveContainer width='100%' height={300}>
-                  <AreaChart
-                    className='w-full mx-auto'
-                    data={sortedGrowthData}
-                    margin={{
-                      top: 5,
-                      right: 60
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray='3 3' />
-                    <XAxis dataKey='name' />
-                    <YAxis />
-                    <Tooltip formatter={(value) => formatTooltipValue(value)} />
-                    <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
-                    <Area
-                      type='monotone'
-                      dataKey='weight'
-                      stroke='#82ca9d'
-                      fillOpacity={1}
-                      fill='url(#weightColor)'
-                      name=' weight'
-                    />
-                    <Area
-                      type='monotone'
-                      dataKey='weightStandard'
-                      stroke='#ff7300'
-                      fillOpacity={0.6}
-                      fill='url(#weightStandardColor)'
-                      name='standard weight'
-                    />
-                    <defs>
-                      <linearGradient id='weightStandardColor' x1='0' y1='0' x2='0' y2='1'>
-                        <stop offset='5%' stopColor='#ff7300' stopOpacity={0.8} />
-                        <stop offset='95%' stopColor='#ff7300' stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <defs>
-                      <linearGradient id='weightColor' x1='0' y1='0' x2='0' y2='1'>
-                        <stop offset='5%' stopColor='#82ca9d' stopOpacity={0.8} />
-                        <stop offset='95%' stopColor='#82ca9d' stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                  </AreaChart>
-                </ResponsiveContainer>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
+        <select
+          onChange={handleFilterChange}
+          className={`${isDarkMode ? 'bg-custom-dark' : ''} border rounded-lg p-2 outline-none`}
+        >
+          <option value='Day'>Day</option>
+          <option value='Last month'>Last month</option>
+          <option value='Last year'>Last year</option>
+        </select>
       </div>
+      <motion.div
+        initial='hidden'
+        animate='visible'
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.3
+            }
+          }
+        }}
+        className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-7'
+      >
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, x: 100 },
+            visible: { opacity: 1, x: 0, transition: { delay: 0.6 } }
+          }}
+          className='border py-5 rounded-lg w-full border-gray-200 shadow-lg'
+        >
+          <div className='lg:text-xl md:text-lg text-sm mb-4 text-center'>Nitrite - Phosphate - Ammonium (mg/l)</div>
+          <ResponsiveContainer width='100%' height={300}>
+            <LineChart
+              className='w-full mx-auto'
+              data={sortedWaterData}
+              margin={{
+                top: 10,
+                right: 50,
+                left: 0,
+                bottom: 0
+              }}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis dataKey='name' />
+              <YAxis />
+              <Tooltip formatter={(value) => formatTooltipValue(value)} />
+              <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
+              <Line
+                type='monotone'
+                dataKey='nitrite'
+                strokeOpacity={opacity.nitrite}
+                stroke='#8884d8'
+                activeDot={{ r: 6, fill: '#8884d8', stroke: 'white', strokeWidth: 2 }}
+              />
+              <Line
+                type='monotone'
+                dataKey='phosphate'
+                strokeOpacity={opacity.phosphate}
+                stroke='#ff7300'
+                activeDot={{ r: 6, fill: '#ff7300', stroke: 'white', strokeWidth: 2 }}
+              />
+              <Line
+                type='monotone'
+                dataKey='totalChlorine'
+                strokeOpacity={opacity.totalChlorine}
+                stroke='#387908'
+                activeDot={{ r: 6, fill: '#387908', stroke: 'white', strokeWidth: 2 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </motion.div>
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, x: 100 },
+            visible: { opacity: 1, x: 0, transition: { delay: 0.9 } }
+          }}
+          className='py-5 rounded-lg border border-gray-200 shadow-lg'
+        >
+          <div className='lg:text-xl md:text-lg text-sm mb-4 text-center'>Carbon - PH - Hardness (dH)</div>
+          <ResponsiveContainer width='100%' height={300}>
+            <LineChart
+              width={500}
+              height={300}
+              data={sortedWaterData}
+              className='w-full mx-auto'
+              margin={{
+                top: 5,
+                right: 60
+              }}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis dataKey='name' />
+              <YAxis />
+              <Tooltip formatter={(value) => formatTooltipValue(value)} />
+              <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
+              <Line
+                type='monotone'
+                dataKey='carbonHardness'
+                strokeOpacity={opacity.carbonHardness}
+                stroke='#8884d8'
+                activeDot={{ r: 6, fill: '#8884d8', stroke: 'white', strokeWidth: 2 }}
+              />
+              <Line
+                type='monotone'
+                dataKey='phValue'
+                strokeOpacity={opacity.phValue}
+                stroke='#82ca9d'
+                activeDot={{ r: 6, fill: '#82ca9d', stroke: 'white', strokeWidth: 2 }}
+              />
+              <LineChart
+                type='monotone'
+                dataKey='hardness'
+                strokeOpacity={opacity.hardness}
+                stroke='#ff7300'
+                activeDot={{ r: 6, fill: '#ff7300', stroke: 'white', strokeWidth: 2 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </motion.div>
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, x: 100 },
+            visible: { opacity: 1, x: 0, transition: { delay: 1.2 } }
+          }}
+          className='py-5 rounded-lg border border-gray-200 shadow-lg'
+        >
+          <div className='text-xl mb-4 text-center'>Temperature - Temp (C)</div>
+          <ResponsiveContainer width='100%' height={300}>
+            <LineChart
+              width={500}
+              height={300}
+              data={sortedWaterData}
+              className='w-full mx-auto'
+              margin={{
+                top: 5,
+                right: 60
+              }}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis dataKey='name' />
+              <YAxis />
+              <Tooltip />
+              <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
+              <Line
+                type='monotone'
+                dataKey='temperature'
+                strokeOpacity={opacity.temperature}
+                stroke='#8884d8'
+                activeDot={{ r: 6, fill: '#8884d8', stroke: 'white', strokeWidth: 2 }}
+              />
+              <Line
+                type='monotone'
+                dataKey='temp'
+                strokeOpacity={opacity.temp}
+                stroke='#82ca9d'
+                activeDot={{ r: 6, fill: '#82ca9d', stroke: 'white', strokeWidth: 2 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </motion.div>
+      <motion.div
+        initial='hidden'
+        animate='visible'
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.3
+            }
+          }
+        }}
+        className='grid lg:grid-cols-2 grid-cols-1 gap-7 mt-10'
+      >
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, x: 0 },
+            visible: { opacity: 1, x: 0, transition: { delay: 0.6 } }
+          }}
+          className='py-5 px-2 rounded-lg border border-gray-200 shadow-lg'
+        >
+          <div className='text-xl mb-4 text-center'>CO₂ - O₂ - Total Chlorine (mg/l)</div>
+          <ResponsiveContainer width='100%' height={320}>
+            <AreaChart
+              data={sortedWaterData}
+              className='w-full mx-auto'
+              margin={{ top: 20, right: 30, left: 10, bottom: 10 }}
+            >
+              <defs>
+                <linearGradient id='nitrateColor' x1='0' y1='0' x2='0' y2='1'>
+                  <stop offset='5%' stopColor='#ff7300' stopOpacity={0.6} />
+                  <stop offset='95%' stopColor='#ff7300' stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id='carbonDioxideColor' x1='0' y1='0' x2='0' y2='1'>
+                  <stop offset='5%' stopColor='#7CF0FF' stopOpacity={0.6} />
+                  <stop offset='95%' stopColor='#7CF0FF' stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id='oxygenColor' x1='0' y1='0' x2='0' y2='1'>
+                  <stop offset='5%' stopColor='#4570EA' stopOpacity={0.6} />
+                  <stop offset='95%' stopColor='#4570EA' stopOpacity={0} />
+                </linearGradient>
+              </defs>
+
+              <CartesianGrid strokeDasharray='3 3' opacity={0.3} />
+              <XAxis dataKey='name' tick={{ fill: '#555' }} />
+              <YAxis tick={{ fill: '#555' }} />
+              <Tooltip
+                formatter={(value) => `${formatTooltipValue(value)} mg/l`}
+                contentStyle={{ backgroundColor: '#f4f4f4', borderColor: '#ddd' }}
+                labelStyle={{ fontWeight: 'bold' }}
+              />
+              <Area type='monotone' dataKey='nitrate' stackId='1' stroke='#ff7300' fill='url(#nitrateColor)' />
+              <Area
+                type='monotone'
+                dataKey='carbonDioxide'
+                stackId='1'
+                stroke='#7CF0FF'
+                fill='url(#carbonDioxideColor)'
+              />
+              <Area type='monotone' dataKey='oxygen' stackId='1' stroke='#4570EA' fill='url(#oxygenColor)' />
+            </AreaChart>
+          </ResponsiveContainer>
+        </motion.div>
+
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, x: 0 },
+            visible: { opacity: 1, x: 0, transition: { delay: 0.9 } }
+          }}
+          className='py-5 px-2 rounded-lg border border-gray-200 shadow-lg'
+        >
+          <div className='text-xl mb-4 text-center'>Amount fed (g)</div>
+          <ResponsiveContainer width='100%' height={300}>
+            <BarChart data={sortedWaterData}>
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis dataKey='name' />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey='amountFed' fill='#8884d8' />
+            </BarChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </motion.div>
+      <motion.div
+        initial='hidden'
+        animate='visible'
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.3
+            }
+          }
+        }}
+        className='grid lg:grid-cols-2 grid-cols-1 gap-7 mt-10'
+      >
+        <motion.div className='py-5 mt-10 rounded-lg border border-gray-200 shadow-lg'>
+          <div className='text-xl mb-4 text-center'>Koi Length Growth History in Pond</div>
+          <ResponsiveContainer width='100%' height={300}>
+            <LineChart
+              data={lengthChartData}
+              className='w-full mx-auto'
+              margin={{
+                top: 5,
+                right: 60
+              }}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis dataKey='date' />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              {koiGrowthData.map((koi, index) => {
+                const colorIndex = Math.floor(Math.random() * availableColors.length)
+                const color = availableColors[colorIndex]
+                availableColors.splice(colorIndex, 1)
+                return (
+                  <Line
+                    key={index}
+                    type='monotone'
+                    dataKey={koi.koiName}
+                    stroke={color}
+                    activeDot={{ r: 8 }}
+                    name={`${koi.koiName}`}
+                  />
+                )
+              })}
+            </LineChart>
+          </ResponsiveContainer>
+        </motion.div>
+
+        <motion.div className='py-5 mt-10 rounded-lg border border-gray-200 shadow-lg'>
+          <div className='text-xl mb-4 text-center'>Koi Weight Growth History in Pond</div>
+          <ResponsiveContainer width='100%' height={300}>
+            <LineChart
+              data={weightChartData}
+              className='w-full mx-auto'
+              margin={{
+                top: 5,
+                right: 60
+              }}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis dataKey='date' />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              {koiGrowthData.map((koi, index) => {
+                const colorIndex = Math.floor(Math.random() * availableColors.length)
+                const color = availableColors[colorIndex]
+                availableColors.splice(colorIndex, 1)
+
+                return (
+                  <Line
+                    key={index}
+                    type='monotone'
+                    dataKey={koi.koiName}
+                    stroke={color}
+                    activeDot={{ r: 8 }}
+                    name={`${koi.koiName}`}
+                  />
+                )
+              })}
+            </LineChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </motion.div>
+      <div className='pb-6 mt-10 text-lg flex justify-between items-center'>
+        <select
+          id='kois'
+          className={`${isDarkMode ? 'bg-custom-dark' : ''} border rounded-lg p-2 outline-none`}
+          onChange={handleKoiChange}
+        >
+          <option value=''>Select a Koi</option>
+          {kois.length > 0 ? (
+            kois.map((koi) => (
+              <option key={koi.id} value={koi.id}>
+                {koi.name}
+              </option>
+            ))
+          ) : (
+            <option disabled>Loading kois...</option>
+          )}
+        </select>
+      </div>
+      <motion.div
+        initial='hidden'
+        animate='visible'
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.3
+            }
+          }
+        }}
+        className='grid lg:grid-cols-2 grid-cols-1 gap-7'
+      >
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, x: -100 },
+            visible: { opacity: 1, x: 0, transition: { delay: 1.2 } }
+          }}
+          className='border py-5 rounded-lg w-full border-gray-200 shadow-lg'
+        >
+          <div className='text-xl mb-4 text-center'>Length Growth History </div>
+          <ResponsiveContainer width='100%' height={300}>
+            <AreaChart
+              data={sortedGrowthData}
+              className='w-full mx-auto'
+              margin={{
+                top: 5,
+                right: 60
+              }}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis dataKey='name' />
+              <YAxis />
+              <Tooltip formatter={(value) => formatTooltipValue(value)} />
+              <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
+              <Area
+                type='monotone'
+                dataKey='length'
+                stroke='#8884d8'
+                fillOpacity={1}
+                fill='url(#lengthColor)'
+                name='length'
+              />
+              <Area
+                type='monotone'
+                dataKey='lengthStandard'
+                stroke='#ff7300'
+                fillOpacity={0.6}
+                fill='url(#lengthStandardColor)'
+                name='standard length'
+              />
+
+              <defs>
+                <linearGradient id='lengthColor' x1='0' y1='0' x2='0' y2='1'>
+                  <stop offset='5%' stopColor='#8884d8' stopOpacity={0.8} />
+                  <stop offset='95%' stopColor='#8884d8' stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id='lengthStandardColor' x1='0' y1='0' x2='0' y2='1'>
+                  <stop offset='5%' stopColor='#ffc658' stopOpacity={0.8} />
+                  <stop offset='95%' stopColor='#ffc658' stopOpacity={0} />
+                </linearGradient>
+              </defs>
+            </AreaChart>
+          </ResponsiveContainer>
+        </motion.div>
+
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, x: -100 },
+            visible: { opacity: 1, x: 0, transition: { delay: 1.5 } }
+          }}
+          className='border py-5 rounded-lg w-full border-gray-200 shadow-lg'
+        >
+          <div className='text-xl mb-4 text-center'>Weight Growth History </div>
+          <ResponsiveContainer width='100%' height={300}>
+            <AreaChart
+              className='w-full mx-auto'
+              data={sortedGrowthData}
+              margin={{
+                top: 5,
+                right: 60
+              }}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis dataKey='name' />
+              <YAxis />
+              <Tooltip formatter={(value) => formatTooltipValue(value)} />
+              <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
+              <Area
+                type='monotone'
+                dataKey='weight'
+                stroke='#82ca9d'
+                fillOpacity={1}
+                fill='url(#weightColor)'
+                name=' weight'
+              />
+              <Area
+                type='monotone'
+                dataKey='weightStandard'
+                stroke='#ff7300'
+                fillOpacity={0.6}
+                fill='url(#weightStandardColor)'
+                name='standard weight'
+              />
+              <defs>
+                <linearGradient id='weightStandardColor' x1='0' y1='0' x2='0' y2='1'>
+                  <stop offset='5%' stopColor='#ff7300' stopOpacity={0.8} />
+                  <stop offset='95%' stopColor='#ff7300' stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <defs>
+                <linearGradient id='weightColor' x1='0' y1='0' x2='0' y2='1'>
+                  <stop offset='5%' stopColor='#82ca9d' stopOpacity={0.8} />
+                  <stop offset='95%' stopColor='#82ca9d' stopOpacity={0} />
+                </linearGradient>
+              </defs>
+            </AreaChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </motion.div>
     </div>
   )
 }

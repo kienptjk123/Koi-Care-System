@@ -1,8 +1,6 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import Header from '../../../components/Member/Header'
-import LeftSideBar from '../../../components/Member/LeftSideBar'
 import { useDarkMode } from '../../../hooks/DarkModeContext'
 import TopLayout from '../../../layouts/TopLayout'
 
@@ -158,195 +156,175 @@ function Checkout() {
 
   return (
     <div>
-      <div className='h-screen flex'>
-        <LeftSideBar />
+      <TopLayout text='Recommendations' textName='Checkout' links='member/recommendations' />
 
-        <div
-          className={`relative ${
-            isDarkMode ? 'bg-custom-dark text-white' : 'bg-white text-black'
-          } shadow-xl flex-1 flex-col overflow-y-auto overflow-x-hidden`}
-        >
-          <Header />
+      <div className='lg:border lg:border-gray-200 lg:px-10 lg:py-5 rounded-xl'>
+        <ol className='items-center lg:flex hidden w-full px-52 pb-20 pt-14 justify-center text-center text-sm font-medium text-gray-700'>
+          <li className='flex items-center after:mx-2 after:mb-10 after:h-1 after:w-full w-full after:border-b after:border-gray-400'>
+            <span className='flex flex-col'>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={1.5}
+                stroke='currentColor'
+                className='size-10 bg-blue-400 rounded-full text-white'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  d='M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
+                />
+              </svg>
 
-          <div className='py-5 px-[30px] mx-auto max-w-[1750px] '>
-            <TopLayout text='Recommendations' textName='Checkout' links='member/recommendations' />
+              <div className='mt-4'>Cart</div>
+            </span>
+          </li>
+          <li className='flex items-center after:mx-2 after:mb-10 after:h-1 after:w-full w-full after:border-b after:border-gray-400 dark:text-primary-500'>
+            <span className='flex flex-col'>
+              <div className='w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-white '>2</div>
+              <div className='mt-4'>Address</div>
+            </span>
+          </li>
+          <li className='flex items-center'>
+            <span className='fpalex flex-col'>
+              <div className='w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white '>3</div>
+              <div className='mt-4'>Payment</div>
+            </span>
+          </li>
+        </ol>
 
-            <div className='lg:border lg:border-gray-200 lg:px-10 lg:py-5 rounded-xl'>
-              <ol className='items-center lg:flex hidden w-full px-52 pb-20 pt-14 justify-center text-center text-sm font-medium text-gray-700'>
-                <li className='flex items-center after:mx-2 after:mb-10 after:h-1 after:w-full w-full after:border-b after:border-gray-400'>
-                  <span className='flex flex-col'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='size-10 bg-blue-400 rounded-full text-white'
-                    >
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        d='M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
-                      />
-                    </svg>
-
-                    <div className='mt-4'>Cart</div>
-                  </span>
-                </li>
-                <li className='flex items-center after:mx-2 after:mb-10 after:h-1 after:w-full w-full after:border-b after:border-gray-400 dark:text-primary-500'>
-                  <span className='flex flex-col'>
-                    <div className='w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-white '>
-                      2
-                    </div>
-                    <div className='mt-4'>Address</div>
-                  </span>
-                </li>
-                <li className='flex items-center'>
-                  <span className='fpalex flex-col'>
-                    <div className='w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white '>
-                      3
-                    </div>
-                    <div className='mt-4'>Payment</div>
-                  </span>
-                </li>
-              </ol>
-
-              <div className='lg:border lg:border-gray-200 lg:px-10 lg:py-5 lg:mt-10 rounded-xl'>
-                <div className='lg:text-2xl text-xl font-semibold'>Address</div>
-                <div className='flex flex-col lg:flex-row lg:mt-7 mt-3 text-xl lg:gap-24 justify-between items-center w-full'>
-                  <div className='flex flex-col w-full'>
-                    <input
-                      type='text'
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder='Name'
-                      className={`border ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} lg:px-4 px-3 lg:mt-3 lg:text-lg text-base mt-5 rounded-lg lg:py-3 py-1 border-gray-200 outline-none focus:ring-2 focus:ring-blue-400`}
-                    ></input>
-                    {nameError && <p className='text-red-500 lg:text-base text-xs mt-3'>{nameError}</p>}
-                  </div>
-                  <div className='flex flex-col w-full'>
-                    <input
-                      type='text'
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder='Phone'
-                      className={`border ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} lg:px-4 px-3 lg:mt-3 lg:text-lg text-base mt-5 rounded-lg lg:py-3 py-1 border-gray-200 outline-none focus:ring-2 focus:ring-blue-400`}
-                    ></input>
-                    {phoneError && <p className='text-red-500 lg:text-base text-xs'>{phoneError}</p>}
-                  </div>
-                </div>
-                <div className='flex flex-col lg:flex-row lg:gap-7 gap-2 lg:mt-7 mt-5'>
-                  <select
-                    className={`border ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} border-gray-200 lg:py-3 lg:px-4 px-3 py-1 rounded-lg`}
-                    id='tinh'
-                    name='tinh'
-                    value={selectedTinh}
-                    onChange={(e) => setSelectedTinh(e.target.value)}
-                    title='Chọn Tỉnh Thành'
-                  >
-                    <option value='0'>Province</option>
-                    {tinh.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.full_name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select
-                    className={`border ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} border-gray-200 lg:py-3 lg:px-4 px-3 py-1 lg:mt-0 mt-3 rounded-lg`}
-                    id='quan'
-                    name='quan'
-                    value={selectedQuan}
-                    onChange={(e) => setSelectedQuan(e.target.value)}
-                    title='Chọn Quận Huyện'
-                    disabled={selectedTinh === '0'}
-                  >
-                    <option value='0'>District</option>
-                    {quan.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.full_name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select
-                    className={`border ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} border-gray-200 lg:py-3 lg:px-4 px-3 py-1 lg:mt-0 mt-3 rounded-lg`}
-                    id='phuong'
-                    name='phuong'
-                    value={selectedPhuong}
-                    onChange={(e) => setSelectedPhuong(e.target.value)}
-                    title='Chọn Phường Xã'
-                    disabled={selectedQuan === '0'}
-                  >
-                    <option value='0'>Ward</option>
-                    {phuong.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.full_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className='flex flex-col w-full lg:mt-7 mt-5 text-xl'>
-                  <input
-                    type='text'
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder='Address'
-                    className={`border lg:px-4 ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} px-4 py-1 lg:mt-3 rounded-lg lg:text-lg text-base lg:py-3 border-gray-200 outline-none focus:ring-2 focus:ring-blue-400`}
-                  ></input>
-                  {addressError && <p className='text-red-500 lg:text-base text-xs'>{addressError}</p>}
-                </div>
-                <div className='flex flex-col w-full lg:mt-7 mt-5 text-xl'>
-                  <textarea
-                    type='text'
-                    onChange={(e) => setNote(e.target.value)}
-                    placeholder='Note'
-                    className={`border lg:px-4 ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} px-4 py-1 lg:mt-3 rounded-lg lg:text-lg text-base lg:py-6 border-gray-200 outline-none focus:ring-2 focus:ring-blue-400`}
-                  ></textarea>
-                </div>
-              </div>
-
-              <div className='lg:border lg:border-gray-200 lg:px-10 lg:py-5 mt-10 rounded-xl'>
-                <div className='lg:text-2xl text-xl font-semibold'>Order Summary</div>
-                <div className='flex mt-5 lg:mt-7 text-lg lg:text-xl justify-between'>
-                  <div className=''>Sub Total</div>
-                  <div className=''>{subTotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</div>
-                </div>
-
-                <div className='flex mt-5 lg:mt-7 text-lg lg:text-xl justify-between'>
-                  <div className=''>Discount</div>
-                  <div className=''>
-                    {' '}
-                    {(subTotal - promotionTotal).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                  </div>
-                </div>
-
-                <div className='flex mt-5 lg:mt-7 text-lg lg:text-xl justify-between'>
-                  <div className=''>Shipping</div>
-                  <div className=''>Free</div>
-                </div>
-
-                <div className='flex mt-5 lg:mt-7 text-lg lg:text-xl justify-between'>
-                  <div className='font-medium'>Total</div>
-                  <div className=''>
-                    {promotionTotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                  </div>
-                </div>
-              </div>
-
-              <div className='flex flex-col lg:flex-row gap-4 lg:gap-0 justify-between mt-8'>
-                <Link
-                  to={-1}
-                  className='w-full lg:w-auto px-6 py-3 bg-gray-300 hover:bg-gray-400 text-white text-center rounded-lg cursor-pointer'
-                >
-                  Back
-                </Link>
-                <Link
-                  onClick={() => addAddress()}
-                  className='w-full lg:w-auto px-6 py-3 bg-blue-400 hover:bg-blue-500 text-white rounded-lg text-center cursor-pointer'
-                >
-                  Payment
-                </Link>
-              </div>
+        <div className='lg:border lg:border-gray-200 lg:px-10 lg:py-5 lg:mt-10 rounded-xl'>
+          <div className='lg:text-2xl text-xl font-semibold'>Address</div>
+          <div className='flex flex-col lg:flex-row lg:mt-7 mt-3 text-xl lg:gap-24 justify-between items-center w-full'>
+            <div className='flex flex-col w-full'>
+              <input
+                type='text'
+                onChange={(e) => setName(e.target.value)}
+                placeholder='Name'
+                className={`border ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} lg:px-4 px-3 lg:mt-3 lg:text-lg text-base mt-5 rounded-lg lg:py-3 py-1 border-gray-200 outline-none focus:ring-2 focus:ring-blue-400`}
+              ></input>
+              {nameError && <p className='text-red-500 lg:text-base text-xs mt-3'>{nameError}</p>}
+            </div>
+            <div className='flex flex-col w-full'>
+              <input
+                type='text'
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder='Phone'
+                className={`border ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} lg:px-4 px-3 lg:mt-3 lg:text-lg text-base mt-5 rounded-lg lg:py-3 py-1 border-gray-200 outline-none focus:ring-2 focus:ring-blue-400`}
+              ></input>
+              {phoneError && <p className='text-red-500 lg:text-base text-xs'>{phoneError}</p>}
             </div>
           </div>
+          <div className='flex flex-col lg:flex-row lg:gap-7 gap-2 lg:mt-7 mt-5'>
+            <select
+              className={`border ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} border-gray-200 lg:py-3 lg:px-4 px-3 py-1 rounded-lg`}
+              id='tinh'
+              name='tinh'
+              value={selectedTinh}
+              onChange={(e) => setSelectedTinh(e.target.value)}
+              title='Chọn Tỉnh Thành'
+            >
+              <option value='0'>Province</option>
+              {tinh.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.full_name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              className={`border ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} border-gray-200 lg:py-3 lg:px-4 px-3 py-1 lg:mt-0 mt-3 rounded-lg`}
+              id='quan'
+              name='quan'
+              value={selectedQuan}
+              onChange={(e) => setSelectedQuan(e.target.value)}
+              title='Chọn Quận Huyện'
+              disabled={selectedTinh === '0'}
+            >
+              <option value='0'>District</option>
+              {quan.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.full_name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              className={`border ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} border-gray-200 lg:py-3 lg:px-4 px-3 py-1 lg:mt-0 mt-3 rounded-lg`}
+              id='phuong'
+              name='phuong'
+              value={selectedPhuong}
+              onChange={(e) => setSelectedPhuong(e.target.value)}
+              title='Chọn Phường Xã'
+              disabled={selectedQuan === '0'}
+            >
+              <option value='0'>Ward</option>
+              {phuong.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.full_name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className='flex flex-col w-full lg:mt-7 mt-5 text-xl'>
+            <input
+              type='text'
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder='Address'
+              className={`border lg:px-4 ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} px-4 py-1 lg:mt-3 rounded-lg lg:text-lg text-base lg:py-3 border-gray-200 outline-none focus:ring-2 focus:ring-blue-400`}
+            ></input>
+            {addressError && <p className='text-red-500 lg:text-base text-xs'>{addressError}</p>}
+          </div>
+          <div className='flex flex-col w-full lg:mt-7 mt-5 text-xl'>
+            <textarea
+              type='text'
+              onChange={(e) => setNote(e.target.value)}
+              placeholder='Note'
+              className={`border lg:px-4 ${isDarkMode ? 'bg-custom-dark' : 'bg-white'} px-4 py-1 lg:mt-3 rounded-lg lg:text-lg text-base lg:py-6 border-gray-200 outline-none focus:ring-2 focus:ring-blue-400`}
+            ></textarea>
+          </div>
+        </div>
+
+        <div className='lg:border lg:border-gray-200 lg:px-10 lg:py-5 mt-10 rounded-xl'>
+          <div className='lg:text-2xl text-xl font-semibold'>Order Summary</div>
+          <div className='flex mt-5 lg:mt-7 text-lg lg:text-xl justify-between'>
+            <div className=''>Sub Total</div>
+            <div className=''>{subTotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</div>
+          </div>
+
+          <div className='flex mt-5 lg:mt-7 text-lg lg:text-xl justify-between'>
+            <div className=''>Discount</div>
+            <div className=''>
+              {' '}
+              {(subTotal - promotionTotal).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+            </div>
+          </div>
+
+          <div className='flex mt-5 lg:mt-7 text-lg lg:text-xl justify-between'>
+            <div className=''>Shipping</div>
+            <div className=''>Free</div>
+          </div>
+
+          <div className='flex mt-5 lg:mt-7 text-lg lg:text-xl justify-between'>
+            <div className='font-medium'>Total</div>
+            <div className=''>{promotionTotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</div>
+          </div>
+        </div>
+
+        <div className='flex flex-col lg:flex-row gap-4 lg:gap-0 justify-between mt-8'>
+          <Link
+            to={-1}
+            className='w-full lg:w-auto px-6 py-3 bg-gray-300 hover:bg-gray-400 text-white text-center rounded-lg cursor-pointer'
+          >
+            Back
+          </Link>
+          <Link
+            onClick={() => addAddress()}
+            className='w-full lg:w-auto px-6 py-3 bg-blue-400 hover:bg-blue-500 text-white rounded-lg text-center cursor-pointer'
+          >
+            Payment
+          </Link>
         </div>
       </div>
     </div>
