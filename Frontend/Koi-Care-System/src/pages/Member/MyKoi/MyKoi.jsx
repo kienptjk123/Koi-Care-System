@@ -4,16 +4,13 @@ import axios from 'axios'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { FaSpinner } from 'react-icons/fa'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import Header from '../../../components/Member/Header'
-import LeftSideBar from '../../../components/Member/LeftSideBar'
 import { useDarkMode } from '../../../hooks/DarkModeContext'
 import TopLayout from '../../../layouts/TopLayout'
-import Skeleton from 'react-loading-skeleton'
-import 'react-loading-skeleton/dist/skeleton.css'
 
 function MyKoi() {
   const { isDarkMode } = useDarkMode()
@@ -212,205 +209,189 @@ function MyKoi() {
 
   return (
     <div>
-      <div className='h-screen flex'>
-        <LeftSideBar />
-        <div
-          className={`relative ${isDarkMode ? 'bg-custom-light text-white' : 'bg-white text-black'} 
-           shadow-xl flex-1 flex-col overflow-y-auto overflow-x-hidden`}
+      <div className=''>
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          fill='none'
+          viewBox='0 0 24 24'
+          strokeWidth={1.5}
+          stroke='currentColor'
+          className='fixed lg:bottom-7 bottom-[22px] right-5 text-lg hover:bg-blue-600 text-white rounded-full shadow-lg lg:size-12 size-8 cursor-pointer z-30'
+          onClick={toggleAddFormVisibility}
         >
-          <Header />
-          <div className='py-5 px-[30px] mx-auto max-w-[1750px]'>
-            <div className=''>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='fixed lg:bottom-7 bottom-[22px] right-5 text-lg hover:bg-blue-600 text-white rounded-full shadow-lg lg:size-12 size-8 cursor-pointer z-30'
-                onClick={toggleAddFormVisibility}
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
-                />
-              </svg>
-              <div className='fixed lg:w-[140px] w-[100px] lg:h-12 h-9 lg:bottom-7 bottom-5 right-5 rounded-3xl text-white bg-custom-left-bar z-20'>
-                <p className='lg:text-3xl text-xl font-semibold pt-1 pl-3'>
-                  {koiCounts[localStorage.getItem('id')] !== undefined ? koiCounts[localStorage.getItem('id')] : '...'}{' '}
-                  Koi
-                </p>
-              </div>
-            </div>
-            <TopLayout text='My Koi' links='member/myKoi' />
-            <div>
-              <div className='w-full flex justify-end relative'>
-                <div className='cursor-pointer' onClick={toggleButtons}>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    strokeWidth={1.5}
-                    stroke='currentColor'
-                    className={`${isDarkMode ? ' text-custom-layout-light' : 'text-custom-layout-dark'} size-6 lg:size-8 mb-4`}
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      d='M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75'
-                    />
-                  </svg>
+          <path strokeLinecap='round' strokeLinejoin='round' d='M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' />
+        </svg>
+        <div className='fixed lg:w-[140px] w-[100px] lg:h-12 h-9 lg:bottom-7 bottom-5 right-5 rounded-3xl text-white bg-custom-left-bar z-20'>
+          <p className='lg:text-3xl text-xl font-semibold pt-1 pl-3'>
+            {koiCounts[localStorage.getItem('id')] !== undefined ? koiCounts[localStorage.getItem('id')] : '...'} Koi
+          </p>
+        </div>
+      </div>
+      <TopLayout text='My Koi' links='member/myKoi' />
+      <div>
+        <div className='w-full flex justify-end relative'>
+          <div className='cursor-pointer' onClick={toggleButtons}>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={1.5}
+              stroke='currentColor'
+              className={`${isDarkMode ? ' text-custom-layout-light' : 'text-custom-layout-dark'} size-6 lg:size-8 mb-4`}
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75'
+              />
+            </svg>
 
-                  <div
-                    className={`absolute right-0 transition-all duration-500 -mt-3 border z-10 ease-in-out overflow-hidden ${showButtons ? 'max-h-50 opacity-100' : 'max-h-0 opacity-0'}`}
-                  >
-                    <div
-                      className={`${isDarkMode ? 'bg-custom-dark text-white' : 'bg-white text-black'} flex flex-col space-y-2 shadow-lg rounded-lg p-4`}
-                    >
-                      <button
-                        className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
-                        onClick={() => sortByName('desc')}
-                      >
-                        Sorted by Name (Z-A)
-                      </button>
-                      <button
-                        className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
-                        onClick={() => sortByName('asc')}
-                      >
-                        Sorted by Name (A-Z)
-                      </button>
-                      <button
-                        className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
-                        onClick={() => sortLength('asc')}
-                      >
-                        Sorted by Length (asc)
-                      </button>
-                      <button
-                        className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
-                        onClick={() => sortLength('desc')}
-                      >
-                        Sorted by Length (desc)
-                      </button>
-                      <button
-                        className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
-                        onClick={() => sortAge('asc')}
-                      >
-                        Sorted by Age (asc)
-                      </button>
-                      <button
-                        className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
-                        onClick={() => sortAge('desc')}
-                      >
-                        Sorted by Age (desc)
-                      </button>
-                    </div>
-                  </div>
-                </div>
+            <div
+              className={`absolute right-0 transition-all duration-500 -mt-3 border z-10 ease-in-out overflow-hidden ${showButtons ? 'max-h-50 opacity-100' : 'max-h-0 opacity-0'}`}
+            >
+              <div
+                className={`${isDarkMode ? 'bg-custom-dark text-white' : 'bg-white text-black'} flex flex-col space-y-2 shadow-lg rounded-lg p-4`}
+              >
+                <button
+                  className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
+                  onClick={() => sortByName('desc')}
+                >
+                  Sorted by Name (Z-A)
+                </button>
+                <button
+                  className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
+                  onClick={() => sortByName('asc')}
+                >
+                  Sorted by Name (A-Z)
+                </button>
+                <button
+                  className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
+                  onClick={() => sortLength('asc')}
+                >
+                  Sorted by Length (asc)
+                </button>
+                <button
+                  className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
+                  onClick={() => sortLength('desc')}
+                >
+                  Sorted by Length (desc)
+                </button>
+                <button
+                  className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
+                  onClick={() => sortAge('asc')}
+                >
+                  Sorted by Age (asc)
+                </button>
+                <button
+                  className={`${isDarkMode ? 'hover:bg-custom-layout-dark' : 'hover:bg-custom-layout-light'} btn py-2 px-4 rounded lg:text-xl text-xs `}
+                  onClick={() => sortAge('desc')}
+                >
+                  Sorted by Age (desc)
+                </button>
               </div>
-              {kois.length > 0 ? (
-                <motion.div
-                  initial='hidden'
-                  animate='visible'
-                  variants={{
-                    visible: {
-                      transition: {
-                        staggerChildren: 0.01
-                      }
-                    }
-                  }}
-                  className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-3 py-3'
-                >
-                  {kois.map((koi, index) => (
-                    <motion.div
-                      variants={{
-                        hidden: { opacity: 0, x: 100 },
-                        visible: { opacity: 1, x: 0, transition: { delay: index * 0.05 } }
-                      }}
-                      key={koi.id}
-                      className={`${
-                        isDarkMode ? 'bg-custom-dark text-white' : 'bg-white text-black'
-                      }  rounded-xl border cursor-pointer`}
-                    >
-                      <Link onMouseEnter={() => import('../MyKoi/KoiDetail')} to={`/member/myKoi/${koi.id}`}>
-                        <div className='flex gap-3 '>
-                          <div className='w-[48%] '>
-                            <img
-                              src={koi.imageUrl}
-                              alt={koi.name}
-                              className='w-full h-32 object-cover rounded-s-xl overflow-hidden'
-                              style={{ objectFit: 'cover', filter: 'brightness(1.1)' }}
-                            />
-                          </div>
-                          <div className=' w-[52%] flex mt-1  '>
-                            <div className='grid grid-rows-4 w-[30%]'>
-                              <h3 className='text-sm '>Name:</h3>
-                              <h3 className='text-sm '>Age: </h3>
-                              <h3 className='text-sm '>Variety:</h3>
-                              <h3 className='text-sm '>Length:</h3>
-                            </div>
-                            <div className='grid grid-rows-4'>
-                              <p className='ml-2 text-sm font-semibold text-nowrap z-50'>{koi.name}</p>
-                              <p className='ml-2 text-sm font-semibold '>{koi.age} years</p>
-                              <p className='ml-2 text-sm font-semibold '>{koi.variety}</p>
-                              <p className='ml-2 text-sm font-semibold '>{koi.length} cm</p>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial='hidden'
-                  animate='visible'
-                  variants={{
-                    visible: {
-                      transition: {
-                        staggerChildren: 0.01
-                      }
-                    }
-                  }}
-                  className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-3 py-3'
-                >
-                  {[...Array(12)].map((_, index) => (
-                    <motion.div
-                      variants={{
-                        hidden: { opacity: 0, x: 100 },
-                        visible: { opacity: 1, x: 0, transition: { delay: index * 0.05 } }
-                      }}
-                      key={index}
-                      className={`${
-                        isDarkMode ? 'bg-custom-dark text-white' : 'bg-white text-black'
-                      } rounded-xl border cursor-pointer`}
-                    >
-                      <div className='flex gap-3'>
-                        <div className='w-[48%]'>
-                          <Skeleton height={128} className='w-full h-32 rounded-s-xl' />
-                        </div>
-                        <div className='w-[52%] flex mt-1'>
-                          <div className='grid grid-rows-4 w-[30%]'>
-                            <Skeleton className='text-sm' />
-                            <Skeleton className='text-sm' />
-                            <Skeleton className='text-sm' />
-                            <Skeleton className='text-sm' />
-                          </div>
-                          <div className='grid grid-rows-4'>
-                            <Skeleton width={100} height={16} className='ml-2' />
-                            <Skeleton width={80} height={16} className='ml-2' />
-                            <Skeleton width={100} height={16} className='ml-2' />
-                            <Skeleton width={80} height={16} className='ml-2' />
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
             </div>
           </div>
         </div>
+        {kois.length > 0 ? (
+          <motion.div
+            initial='hidden'
+            animate='visible'
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.01
+                }
+              }
+            }}
+            className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-3 py-3'
+          >
+            {kois.map((koi, index) => (
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, x: 100 },
+                  visible: { opacity: 1, x: 0, transition: { delay: index * 0.05 } }
+                }}
+                key={koi.id}
+                className={`${
+                  isDarkMode ? 'bg-custom-dark text-white' : 'bg-white text-black'
+                }  rounded-xl border cursor-pointer`}
+              >
+                <Link onMouseEnter={() => import('../MyKoi/KoiDetail')} to={`/member/myKoi/${koi.id}`}>
+                  <div className='flex gap-3 '>
+                    <div className='w-[48%] '>
+                      <img
+                        src={koi.imageUrl}
+                        alt={koi.name}
+                        className='w-full h-32 object-cover rounded-s-xl overflow-hidden'
+                        style={{ objectFit: 'cover', filter: 'brightness(1.1)' }}
+                      />
+                    </div>
+                    <div className=' w-[52%] flex mt-1  '>
+                      <div className='grid grid-rows-4 w-[30%]'>
+                        <h3 className='text-sm '>Name:</h3>
+                        <h3 className='text-sm '>Age: </h3>
+                        <h3 className='text-sm '>Variety:</h3>
+                        <h3 className='text-sm '>Length:</h3>
+                      </div>
+                      <div className='grid grid-rows-4'>
+                        <p className='ml-2 text-sm font-semibold text-nowrap z-50'>{koi.name}</p>
+                        <p className='ml-2 text-sm font-semibold '>{koi.age} years</p>
+                        <p className='ml-2 text-sm font-semibold '>{koi.variety}</p>
+                        <p className='ml-2 text-sm font-semibold '>{koi.length} cm</p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div
+            initial='hidden'
+            animate='visible'
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.01
+                }
+              }
+            }}
+            className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-3 py-3'
+          >
+            {[...Array(12)].map((_, index) => (
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, x: 100 },
+                  visible: { opacity: 1, x: 0, transition: { delay: index * 0.05 } }
+                }}
+                key={index}
+                className={`${
+                  isDarkMode ? 'bg-custom-dark text-white' : 'bg-white text-black'
+                } rounded-xl border cursor-pointer`}
+              >
+                <div className='flex gap-3'>
+                  <div className='w-[48%]'>
+                    <Skeleton height={128} className='w-full h-32 rounded-s-xl' />
+                  </div>
+                  <div className='w-[52%] flex mt-1'>
+                    <div className='grid grid-rows-4 w-[30%]'>
+                      <Skeleton className='text-sm' />
+                      <Skeleton className='text-sm' />
+                      <Skeleton className='text-sm' />
+                      <Skeleton className='text-sm' />
+                    </div>
+                    <div className='grid grid-rows-4'>
+                      <Skeleton width={100} height={16} className='ml-2' />
+                      <Skeleton width={80} height={16} className='ml-2' />
+                      <Skeleton width={100} height={16} className='ml-2' />
+                      <Skeleton width={80} height={16} className='ml-2' />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
       </div>
 
       {isAddFormVisible && (

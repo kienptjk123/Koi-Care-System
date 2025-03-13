@@ -1,21 +1,15 @@
-import { useEffect, useState } from 'react'
-import { useDarkMode } from '../../../hooks/DarkModeContext'
-import Header from '../../../components/Shop/Header'
-import LeftSideBar from '../../../components/Shop/LeftSideBar'
+import Paper from '@mui/material/Paper'
+import { DataGrid } from '@mui/x-data-grid'
 import axios from 'axios'
-import 'react-toastify/dist/ReactToastify.css'
-import TopLayout from '../../../layouts/TopLayoutShop'
-import { FaUser } from 'react-icons/fa'
-import { FaPhoneAlt } from 'react-icons/fa'
-import { FaRegAddressCard } from 'react-icons/fa'
+import { useEffect, useState } from 'react'
 import { BsFillCalendarDateFill } from 'react-icons/bs'
-import { FaCartArrowDown } from 'react-icons/fa'
-import { FaMoneyBillWave } from 'react-icons/fa'
+import { FaCartArrowDown, FaMoneyBillWave, FaPhoneAlt, FaRegAddressCard, FaUser } from 'react-icons/fa'
 import { GrNotes } from 'react-icons/gr'
 import { MdPendingActions } from 'react-icons/md'
+import 'react-toastify/dist/ReactToastify.css'
 import * as XLSX from 'xlsx'
-import { DataGrid } from '@mui/x-data-grid'
-import Paper from '@mui/material/Paper'
+import { useDarkMode } from '../../../hooks/DarkModeContext'
+import TopLayout from '../../../layouts/TopLayoutShop'
 
 function Payment() {
   const { isDarkMode } = useDarkMode()
@@ -161,121 +155,113 @@ function Payment() {
     XLSX.writeFile(workbook, 'payments.xlsx')
   }
   return (
-    <div className='h-screen flex'>
-      <LeftSideBar />
-      <div
-        className={`relative ${isDarkMode ? 'bg-custom-light text-white' : 'bg-white text-black'} overflow-y-auto flex-1 flex-col overflow-x-hidden duration-200 ease-linear`}
-      >
-        <Header />
-        <div className='py-5 px-[30px] mx-auto max-w-[1750px]'>
-          <TopLayout text='Payment' links='shop/payment' />
-          <div className='w-full flex justify-end items-center relative'>
-            <button onClick={exportToExcel} className='mb-4 p-2 bg-blue-500 text-white hover:bg-blue-700 rounded-md'>
-              Download Excel
+    <div className=''>
+      <TopLayout text='Payment' links='shop/payment' />
+      <div className='w-full flex justify-end items-center relative'>
+        <button onClick={exportToExcel} className='mb-4 p-2 bg-blue-500 text-white hover:bg-blue-700 rounded-md'>
+          Download Excel
+        </button>
+      </div>
+
+      <Paper sx={{ height: 670 }}>
+        <DataGrid
+          rows={payments}
+          columns={columns}
+          pageSize={10}
+          pageSizeOptions={[5, 10, 20, 50, 100]}
+          rowHeight={60}
+          checkboxSelection
+          disableExtendRowFullWidth
+          getRowId={(row) => row.orderId}
+          sx={{
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: isDarkMode ? '#333' : '#f5f5f5'
+            },
+            '& .MuiDataGrid-row:hover': {
+              backgroundColor: isDarkMode ? 'rgb(36 48 63 / var(--tw-bg-opacity))' : '#e0e0e0'
+            }
+          }}
+        />
+      </Paper>
+
+      {isModalOpen && selectedOrder && (
+        <div
+          className={`fixed top-0 left-0 overflow-auto w-full h-full flex justify-center items-center z-50 bg-opacity-50 ${
+            isDarkMode ? 'bg-gray-900 text-gray-200' : 'bg-gray-800 text-gray-600'
+          }`}
+        >
+          <div
+            className={`p-4 border rounded-lg max-h-[80vh] max-w-[100vw] overflow-auto ${
+              isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'
+            }`}
+          >
+            <h3 className='text-xl text-center font-bold mb-4'>ORDER DETAILS</h3>
+            <div className='p-4 border rounded-lg shadow-lg'>
+              <p className='mb-3 flex items-center gap-2'>
+                <FaCartArrowDown className='text-2xl text-blue-500' />
+                <strong>Order ID:</strong> {selectedOrder.id}
+              </p>
+              <p className='mb-3 flex items-center gap-2'>
+                <BsFillCalendarDateFill className='text-2xl text-purple-500' />
+                <strong>Order Date:</strong> {formatDateTime(selectedOrder.orderDate)}
+              </p>
+              <p className='mb-3 flex items-center gap-2'>
+                <FaRegAddressCard className='text-2xl text-red-500' />
+                <strong>Address:</strong> {selectedOrder.address}
+              </p>
+              <p className='mb-3 flex items-center gap-2'>
+                <FaPhoneAlt className='text-2xl text-green-500' />
+                <strong>Phone:</strong> {selectedOrder.phone}
+              </p>
+              <p className='mb-3 flex items-center gap-2'>
+                <GrNotes className='text-2xl ' />
+                <strong>Note:</strong> {selectedOrder.note}
+              </p>
+              <p className='mb-3 flex items-center gap-2'>
+                <FaUser className='text-2xl ' />
+                <strong>RecipientName:</strong> {selectedOrder.recipientName}
+              </p>
+              <p className='mb-3 flex items-center gap-2'>
+                <MdPendingActions className='text-2xl text-red-500' />
+                <strong>Status:</strong> {selectedOrder.status}
+              </p>
+              <p className='mb-3 flex items-center gap-2'>
+                <FaMoneyBillWave className='text-2xl text-green-500' /> <strong>Total Amount:</strong>{' '}
+                {formatCurrency(selectedOrder.totalAmount)}
+              </p>
+            </div>
+
+            <div className='Order-Table overflow-auto p-4 mt-4 shadow-lg border rounded-lg'>
+              <h2 className='text-xl font-bold mb-2'>Item Details</h2>
+              <table className='min-w-full border-spacing-x-1 border-gray-200'>
+                <thead>
+                  <tr className='border-b'>
+                    <th className='py-3 px-4 text-center text-xs font-bold uppercase'>No</th>
+                    <th className='py-3 px-2 text-center text-xs font-bold uppercase'>Product Name</th>
+                    <th className='py-3 px-2 text-center text-xs font-bold uppercase'>Quantity</th>
+                    <th className='py-3 px-2 text-center text-xs font-bold uppercase'>Total Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedOrder.items.map((item, index) => (
+                    <tr key={item.id}>
+                      <td className='py-2 px-1 text-center border-b border-gray-200'>{index + 1}</td>
+                      <td className='py-2 px-1 text-center border-b border-gray-200'>{item.productName}</td>
+                      <td className='py-2 px-1 text-center border-b border-gray-200'>{item.quantity}</td>
+                      <td className='py-2 px-1 text-center border-b border-gray-200'>
+                        {formatCurrency(item.price * item.quantity)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <button className='mt-4 px-4 py-2 bg-red-500 text-white rounded' onClick={handleCloseModal}>
+              Close
             </button>
           </div>
-
-          <Paper sx={{ height: 670 }}>
-            <DataGrid
-              rows={payments}
-              columns={columns}
-              pageSize={10}
-              pageSizeOptions={[5, 10, 20, 50, 100]}
-              rowHeight={60}
-              checkboxSelection
-              disableExtendRowFullWidth
-              getRowId={(row) => row.orderId}
-              sx={{
-                '& .MuiDataGrid-columnHeaders': {
-                  backgroundColor: isDarkMode ? '#333' : '#f5f5f5'
-                },
-                '& .MuiDataGrid-row:hover': {
-                  backgroundColor: isDarkMode ? 'rgb(36 48 63 / var(--tw-bg-opacity))' : '#e0e0e0'
-                }
-              }}
-            />
-          </Paper>
-
-          {isModalOpen && selectedOrder && (
-            <div
-              className={`fixed top-0 left-0 overflow-auto w-full h-full flex justify-center items-center z-50 bg-opacity-50 ${
-                isDarkMode ? 'bg-gray-900 text-gray-200' : 'bg-gray-800 text-gray-600'
-              }`}
-            >
-              <div
-                className={`p-4 border rounded-lg max-h-[80vh] max-w-[100vw] overflow-auto ${
-                  isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'
-                }`}
-              >
-                <h3 className='text-xl text-center font-bold mb-4'>ORDER DETAILS</h3>
-                <div className='p-4 border rounded-lg shadow-lg'>
-                  <p className='mb-3 flex items-center gap-2'>
-                    <FaCartArrowDown className='text-2xl text-blue-500' />
-                    <strong>Order ID:</strong> {selectedOrder.id}
-                  </p>
-                  <p className='mb-3 flex items-center gap-2'>
-                    <BsFillCalendarDateFill className='text-2xl text-purple-500' />
-                    <strong>Order Date:</strong> {formatDateTime(selectedOrder.orderDate)}
-                  </p>
-                  <p className='mb-3 flex items-center gap-2'>
-                    <FaRegAddressCard className='text-2xl text-red-500' />
-                    <strong>Address:</strong> {selectedOrder.address}
-                  </p>
-                  <p className='mb-3 flex items-center gap-2'>
-                    <FaPhoneAlt className='text-2xl text-green-500' />
-                    <strong>Phone:</strong> {selectedOrder.phone}
-                  </p>
-                  <p className='mb-3 flex items-center gap-2'>
-                    <GrNotes className='text-2xl ' />
-                    <strong>Note:</strong> {selectedOrder.note}
-                  </p>
-                  <p className='mb-3 flex items-center gap-2'>
-                    <FaUser className='text-2xl ' />
-                    <strong>RecipientName:</strong> {selectedOrder.recipientName}
-                  </p>
-                  <p className='mb-3 flex items-center gap-2'>
-                    <MdPendingActions className='text-2xl text-red-500' />
-                    <strong>Status:</strong> {selectedOrder.status}
-                  </p>
-                  <p className='mb-3 flex items-center gap-2'>
-                    <FaMoneyBillWave className='text-2xl text-green-500' /> <strong>Total Amount:</strong>{' '}
-                    {formatCurrency(selectedOrder.totalAmount)}
-                  </p>
-                </div>
-
-                <div className='Order-Table overflow-auto p-4 mt-4 shadow-lg border rounded-lg'>
-                  <h2 className='text-xl font-bold mb-2'>Item Details</h2>
-                  <table className='min-w-full border-spacing-x-1 border-gray-200'>
-                    <thead>
-                      <tr className='border-b'>
-                        <th className='py-3 px-4 text-center text-xs font-bold uppercase'>No</th>
-                        <th className='py-3 px-2 text-center text-xs font-bold uppercase'>Product Name</th>
-                        <th className='py-3 px-2 text-center text-xs font-bold uppercase'>Quantity</th>
-                        <th className='py-3 px-2 text-center text-xs font-bold uppercase'>Total Price</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedOrder.items.map((item, index) => (
-                        <tr key={item.id}>
-                          <td className='py-2 px-1 text-center border-b border-gray-200'>{index + 1}</td>
-                          <td className='py-2 px-1 text-center border-b border-gray-200'>{item.productName}</td>
-                          <td className='py-2 px-1 text-center border-b border-gray-200'>{item.quantity}</td>
-                          <td className='py-2 px-1 text-center border-b border-gray-200'>
-                            {formatCurrency(item.price * item.quantity)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <button className='mt-4 px-4 py-2 bg-red-500 text-white rounded' onClick={handleCloseModal}>
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
         </div>
-      </div>
+      )}
     </div>
   )
 }
